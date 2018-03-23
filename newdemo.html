@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>demo</title>
+<meta charset="utf-8"/>
+<link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
+
+
+
+
+<script type="text/javascript" src="easyui/jquery.min.js"></script>
+<script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="easyui/locale/easyui-lang-zh_CN.js"></script>
+<style>
+
+</style>
+<script>
+var menus = {
+	'menu':[{
+		'menu_id':'1',
+		'menu_icon':'icon-tip',
+		'menu_name':'职位管理',
+		'child':[{
+			'menu_id':'2',
+			'menu_icon':'icon-ok',
+			'menu_name':'级别管理',
+			'menu_url':'/zhiwei/a01'
+		},{
+			'menu_id':'3',
+			'menu_icon':'icon-no',
+			'menu_name':'认证管理',
+			'menu_url':'/zhiwei/a02'
+		}]
+	},{
+		'menu_id':'4',
+		'menu_icon':'icon-undo',
+		'menu_name':'培训管理',
+		'child':[{
+			'menu_id':'5',
+			'menu_icon':'icon-help',
+			'menu_name':'内部课程',
+			'menu_url':'/peixun/b01'
+		},{
+			'menu_id':'6',
+			'menu_icon':'icon-ok',
+			'menu_name':'培训计划',
+			'menu_url':'/peixun/b02'
+		},{
+			'menu_id':'7',
+			'menu_icon':'icon-no',
+			'menu_name':'培训评估',
+			'menu_url':'/peixun/b03'
+		}]
+	},{
+		'menu_id':'8',
+		'menu_icon':'icon-cut',
+		'menu_name':'考勤管理',
+		'child':[{
+			'menu_id':'9',
+			'menu_icon':'icon-ok',
+			'menu_name':'打卡记录',
+			'menu_url':'/kaoqin/c01'
+		},{
+			'menu_id':'10',
+			'menu_icon':'icon-no',
+			'menu_name':'考勤统计',
+			'menu_url':'/kaoqin/c02'
+		}]
+	}]
+}
+
+function initLeftMenu(menus){
+
+	$('#nav_menu').accordion({fit:true,border:false})
+
+    $.each(menus.menu, function(i, a) {
+ 
+		var content = "<div style='padding:10px'><ul class='easyui-tree'>"
+		$.each(a.child, function(j, b) {
+			content += "<li iconCls='" + b.menu_icon + "'><a onClick='submenuClick(this)' datalink='" + b.menu_url + "' dataicon='" + b.menu_icon + "'>" + b.menu_name + "</a></li>"
+		})
+		content += "</ul></div>"
+
+		if(i == 0){
+			$('#nav_menu').accordion('add', {
+				title: a.menu_name,
+				iconCls: a.menu_icon,
+				content: content,
+			})
+		}else{
+			$('#nav_menu').accordion('add', {
+				title: a.menu_name,
+				iconCls: a.menu_icon,
+				content: content,
+				selected: false
+			})
+		}
+		
+	})
+	
+}
+function submenuClick(e){
+	var title = $(e).text()
+	var href = $(e).attr("datalink")
+	var icon = $(e).attr("dataicon")
+	addTab(title, href, icon)
+	clearMenuItem()
+}
+function addTab(title, href, icon){
+
+	var state = $('#tabs_panel').tabs('exists',title)
+	if(!state){
+		$('#tabs_panel').tabs('add',{
+			title: title,
+			href: href,
+			iconCls: icon,
+			closable: true
+		})
+	}else{
+		$('#tabs_panel').tabs('select',title)
+		$('#tabs_panel').tabs('getSelected').panel('refresh', href)
+	}
+}
+
+$(function(){
+	initLeftMenu(menus)
+})
+
+function clearMenuItem(){
+	var panel = $('#nav_menu').accordion('getSelected')
+	var index = $('#nav_menu').accordion('getPanelIndex', panel)
+
+	var panels = $('#nav_menu').accordion('panels')
+	$.each(panels, function(i, e) {
+		if(i != index){
+			var div = e.find("ul.easyui-tree div.tree-node-selected")
+			if(div){
+				div.removeClass("tree-node-selected")
+			}
+		}
+	})
+
+}
+ 
+</script>
+</head>
+
+<body class="easyui-layout">
+    <div data-options="region:'north',split:true" style="height:65px"></div>
+    <div data-options="region:'south',split:true" style="text-align:center">@LCQ Copyright reserved.</div>
+    <div data-options="region:'west',split:true" title="导航菜单"  style="width:200px;">
+        <div id="nav_menu">
+	
+        </div>
+    </div>
+    <div data-options="region:'center'">
+        <div id="tabs_panel" class="easyui-tabs" data-options="fit:true,border:false">
+            <div title="欢迎使用" style="padding:10px">这是首页！</div>
+			<!--
+            <div title="table page" iconCls="icon-ok" data-options="closable:true" style="padding:10px">
+                <table id="tb" class="easyui-datagrid" data-options="singleSelect:true,fit:true,fitColumns:true,pagination:true">
+                    <thead>
+                        <tr>
+                            <th data-options="field:'itemid'" width="80">Item ID</th>
+                            <th data-options="field:'productid'" width="100">Product ID</th>
+                            <th data-options="field:'listprice',align:'right'" width="80">List Price</th>
+                            <th data-options="field:'unitcost',align:'right'" width="80">Unit Cost</th>
+                            <th data-options="field:'attr1'" width="150">Attribute</th>
+                            <th data-options="field:'status',align:'center'" width="50">Status</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div title="other page" data-options="closable:true" style="padding:10px">
+                <div class="easyui-panel" data-options="fit:true">about</div>
+            </div>
+			-->
+        </div>
+    </div>
+
+</body>
+</html>
