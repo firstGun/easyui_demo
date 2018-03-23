@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>demo</title>
+<meta charset="utf-8"/>
+<link rel="stylesheet" type="text/css" href="easyui/themes/metro-blue/easyui.css">
+<link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
+
+
+<script type="text/javascript" src="easyui/jquery.min.js"></script>
+<script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="easyui/locale/easyui-lang-zh_CN.js"></script>
+<style>
+
+</style>
+<script>
+var tree1 = [{
+        "id": 101,
+        "text": "file1",
+        "attributes": { "url": "/demo/book/abc1" }
+    },{
+        "id": 102,
+        "text": "file2",
+        "attributes": { "url": "/demo/book/abc2" }
+    },{
+        "id": 103,
+        "text": "file3",
+        "attributes": { "url": "/demo/book/abc3" }
+    }]
+var data = {"total":28,"rows":[
+	{"productid":"FI-SW-01","productname":"Koi","unitcost":10.00,"status":"P","listprice":36.50,"attr1":"Large","itemid":"EST-1"}
+	 
+    ]}
+$(function(){
+    $("#tb").datagrid('loadData',data)
+    $('#tree1').tree({ 
+        data: tree1 
+        onClick: function(node){
+            alert("qq")
+        }
+    })
+})
+</script>
+</head>
+
+<body class="easyui-layout">
+    <div data-options="region:'north',split:true" style="height:65px"></div>
+    <div data-options="region:'south',split:true" style="text-align:center">@LCQ Copyright reserved.</div>
+    <div data-options="region:'west',split:true" title="main menu" style="width:200px;">
+        <div class="easyui-accordion" data-options="fit:true,border:false">
+            <div title="Title1" data-options="selected:true" style="padding:10px;">
+                <ul id="tree1"></ul>
+            </div>
+            <div title="Title2" style="padding:10px;">
+                <ul class="easyui-tree">
+                    <li><span>item_b01</span></li>
+					<li><span>item_b02</span></li>
+					<li><span>item_b03</span></li>
+                </ul>
+            </div>
+            <div title="Title3" style="padding:10px">
+                <ul class="easyui-tree">
+                    <li><span>item_c01</span></li>
+					<li><span>item_c02</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'">
+        <div class="easyui-tabs" data-options="fit:true,border:false,plain:true">
+            <div title="home page" data-options="href:'demo01.html'" style="padding:10px"></div>
+            <div title="table page" data-options="closable:true" style="padding:10px">
+                <table id="tb" class="easyui-datagrid" data-options="singleSelect:true,fit:true,fitColumns:true,pagination:true">
+                    <thead>
+                        <tr>
+                            <th data-options="field:'itemid'" width="80">Item ID</th>
+                            <th data-options="field:'productid'" width="100">Product ID</th>
+                            <th data-options="field:'listprice',align:'right'" width="80">List Price</th>
+                            <th data-options="field:'unitcost',align:'right'" width="80">Unit Cost</th>
+                            <th data-options="field:'attr1'" width="150">Attribute</th>
+                            <th data-options="field:'status',align:'center'" width="50">Status</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div title="other page" data-options="closable:true" style="padding:10px">
+                <div class="easyui-panel" data-options="fit:true">about</div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>
