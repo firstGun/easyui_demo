@@ -5,10 +5,6 @@
 <meta charset="utf-8"/>
 <link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">
 <link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
-
-
-
-
 <script type="text/javascript" src="easyui/jquery.min.js"></script>
 <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="easyui/locale/easyui-lang-zh_CN.js"></script>
@@ -16,6 +12,9 @@
 
 </style>
 <script>
+/**
+* Name 菜单数据
+*/
 var menus = {
 	'menu':[{
 		'menu_id':'1',
@@ -69,19 +68,18 @@ var menus = {
 		}]
 	}]
 }
-
+/**
+* Name 初始化菜单
+* Param menus 菜单数据
+*/
 function initLeftMenu(menus){
-
 	$('#nav_menu').accordion({fit:true,border:false})
-
-    $.each(menus.menu, function(i, a) {
- 
+  $.each(menus.menu, function(i, a) {
 		var content = "<div style='padding:10px'><ul class='easyui-tree'>"
 		$.each(a.child, function(j, b) {
 			content += "<li iconCls='" + b.menu_icon + "'><a onClick='submenuClick(this)' datalink='" + b.menu_url + "' dataicon='" + b.menu_icon + "'>" + b.menu_name + "</a></li>"
 		})
 		content += "</ul></div>"
-
 		if(i == 0){
 			$('#nav_menu').accordion('add', {
 				title: a.menu_name,
@@ -96,10 +94,12 @@ function initLeftMenu(menus){
 				selected: false
 			})
 		}
-		
 	})
-	
 }
+/**
+* Name 二级菜单点击事件
+* Param e 选项自身
+*/
 function submenuClick(e){
 	var title = $(e).text()
 	var href = $(e).attr("datalink")
@@ -107,8 +107,13 @@ function submenuClick(e){
 	addTab(title, href, icon)
 	clearMenuItem()
 }
+/**
+* Name 添加选项卡
+* Param title 选项标题
+* Param href 选项链接
+* Param icon 选项图标
+*/
 function addTab(title, href, icon){
-
 	var state = $('#tabs_panel').tabs('exists',title)
 	if(!state){
 		$('#tabs_panel').tabs('add',{
@@ -117,20 +122,36 @@ function addTab(title, href, icon){
 			iconCls: icon,
 			closable: true
 		})
+		/*选项卡绑定事件*/
+		$("ul.tabs a.tabs-inner").each(function(){
+			var subTitle = $(this).children(".tabs-title").text()
+			if(title == subTitle){
+				//双击刷新当前选项卡
+				$(this).dblclick(function(){
+					$('#tabs_panel').tabs('getTab',title).panel('refresh', href)
+				})
+				//右键菜单
+				$(this).contextmenu(function(e){
+					$('#tabs_panel').tabs('select',title)
+					e.preventDefault()
+					$('#float_menu').menu('show', {
+						left: e.pageX,
+						top: e.pageY
+					})
+				})
+			}
+		})
 	}else{
 		$('#tabs_panel').tabs('select',title)
-		$('#tabs_panel').tabs('getSelected').panel('refresh', href)
+		//$('#tabs_panel').tabs('getSelected').panel('refresh', href)
 	}
 }
-
-$(function(){
-	initLeftMenu(menus)
-})
-
+/**
+* Name 清除已选菜单项以外的选中项样式
+*/
 function clearMenuItem(){
 	var panel = $('#nav_menu').accordion('getSelected')
 	var index = $('#nav_menu').accordion('getPanelIndex', panel)
-
 	var panels = $('#nav_menu').accordion('panels')
 	$.each(panels, function(i, e) {
 		if(i != index){
@@ -140,15 +161,53 @@ function clearMenuItem(){
 			}
 		}
 	})
-
 }
- 
+/**
+* Name 初始化浮动菜单
+*/
+function initFloatMenu(){
+	$('#float_menu').menu({
+		onClick:function(item){
+			var sum = $('#tabs_panel').tabs('tabs').length
+			var tab = $('#tabs_panel').tabs('getSelected')
+			var index = $('#tabs_panel').tabs('getTabIndex', tab)
+			switch(item.id){
+				case "close_itself":
+					$('#tabs_panel').tabs('close', index)
+					break
+				case "close_all":
+					for(var i=1; i<sum; i++){
+						$('#tabs_panel').tabs('close', 1)
+					}
+					break
+				case "close_other":
+					for(var i=1; i<index; i++){
+						$('#tabs_panel').tabs('close', 1)
+					}
+					for(var i=1; i<sum-index; i++){
+						$('#tabs_panel').tabs('close', 2)
+					}
+					break
+			}
+		}
+	})
+}
+/**
+* Name 初始化操作
+*/
+$(function(){
+	initLeftMenu(menus)
+	initFloatMenu()
+	$("ul.tabs a.tabs-inner").first().dblclick(function(){
+		$('#tabs_panel').tabs('getTab',0).panel('refresh')
+	})
+})
 </script>
 </head>
 
 <body class="easyui-layout">
     <div data-options="region:'north',split:true" style="height:65px"></div>
-    <div data-options="region:'south',split:true" style="text-align:center">@LCQ Copyright reserved.</div>
+    <div data-options="region:'south',split:true" style="height:25px;text-align:center;background:#e0ecff">@LCQ Copyright reserved.</div>
     <div data-options="region:'west',split:true" title="导航菜单"  style="width:200px;">
         <div id="nav_menu">
 	
@@ -157,27 +216,14 @@ function clearMenuItem(){
     <div data-options="region:'center'">
         <div id="tabs_panel" class="easyui-tabs" data-options="fit:true,border:false">
             <div title="欢迎使用" style="padding:10px">这是首页！</div>
-			<!--
-            <div title="table page" iconCls="icon-ok" data-options="closable:true" style="padding:10px">
-                <table id="tb" class="easyui-datagrid" data-options="singleSelect:true,fit:true,fitColumns:true,pagination:true">
-                    <thead>
-                        <tr>
-                            <th data-options="field:'itemid'" width="80">Item ID</th>
-                            <th data-options="field:'productid'" width="100">Product ID</th>
-                            <th data-options="field:'listprice',align:'right'" width="80">List Price</th>
-                            <th data-options="field:'unitcost',align:'right'" width="80">Unit Cost</th>
-                            <th data-options="field:'attr1'" width="150">Attribute</th>
-                            <th data-options="field:'status',align:'center'" width="50">Status</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-            <div title="other page" data-options="closable:true" style="padding:10px">
-                <div class="easyui-panel" data-options="fit:true">about</div>
-            </div>
-			-->
         </div>
     </div>
-
+		
+		<div id="float_menu" class="easyui-menu" style="width:200px;">
+			<div id="close_itself">关闭当前页</div>
+			<div class="menu-sep"></div>
+			<div id="close_all">全部关闭（除首页）</div>
+			<div id="close_other">全部关闭（除当前页与首页）</div>
+		</div>
 </body>
 </html>
