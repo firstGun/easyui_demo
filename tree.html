@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>tree</title>
+<meta charset="utf-8"/>
+<link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
+<script type="text/javascript" src="easyui/jquery.min.js"></script>
+<script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="easyui/locale/easyui-lang-zh_CN.js"></script>
+</head>
+<body>
+	<ul id="tt"></ul>
+	<button onClick="setCheckedNode(power_ary)">setData</button>
+	<button onClick="getCheckedNode()">getData</button>
+<script>
+var power_ary = [2,3,6,9]
+var menu_data = [
+	{
+		'id': 1,
+		'text': '职位管理',
+		'children': [{
+			'id': 2,
+			'text': '级别管理'
+		},{
+			'id': 3,
+			'text': '认证管理'
+		}]
+	},{
+		'id': 4,
+		'text': '培训管理',
+		'children': [{
+			'id': 5,
+			'text': '内部课程'
+		},{
+			'id': 6,
+			'text': '培训计划'
+		},{
+			'id': 7,
+			'text': '培训评估'		
+		}]
+	},{
+		'id': 8,
+		'text': '考勤管理',
+		'children': [{
+			'id': 9,
+			'text': '打卡记录'
+		},{
+			'id': 10,
+			'text': '考勤统计'
+		}]
+	}]
+$('#tt').tree({
+	checkbox: true,
+	animate: true,
+	data: menu_data
+})
+
+
+function getCheckedNode(){
+	var ary = []
+	var roots = $('#tt').tree('getRoots')
+	for(var i=0; i<roots.length; i++){
+		var root = roots[i]
+		addCheckedNodeToAry(root, ary)
+		for(var j=0; j<root.children.length; j++){
+			var node = root.children[j]
+			addCheckedNodeToAry(node, ary)
+			if(node.children != null){
+				for(var k=0; k<node.children.length; k++){
+					var subnode = node.children[k]
+					addCheckedNodeToAry(subnode, ary)
+				}
+			}
+		}
+	}
+	alert(JSON.stringify(ary))
+}
+function addCheckedNodeToAry(node, ary){
+	if(node.checkState != 'unchecked'){
+		ary.push(node.id)
+	}
+}
+function setCheckedNode(ary){
+	for(var i=0; i<ary.length; i++){
+		var node = $('#tt').tree('find', ary[i])
+		$('#tt').tree('check', node.target)
+	}
+}
+</script>
+</body>
+</html>
+
+
